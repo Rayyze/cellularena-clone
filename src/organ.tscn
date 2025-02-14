@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://eyfcb2roy48l"]
+
+[ext_resource type="Script" path="res://src/organ.gd" id="1_8oqcm"]
+[ext_resource type="Texture2D" uid="uid://bw7edvmwf2fq8" path="res://assets/basic.png" id="2_878il"]
+[ext_resource type="Texture2D" uid="uid://cbg8i2rvr30os" path="res://assets/root.png" id="3_teevi"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_03kvw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_878il")
+}],
+"loop": true,
+"name": &"basic",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_teevi")
+}],
+"loop": true,
+"name": &"root",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yuo24"]
+size = Vector2(478, 482)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a2yqt"]
+size = Vector2(128, 89)
+
+[node name="Organ" type="Node2D"]
+script = ExtResource("1_8oqcm")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(256, 256)
+scale = Vector2(0.9, 0.9)
+sprite_frames = SubResource("SpriteFrames_03kvw")
+animation = &"root"
+
+[node name="SelfHitbox" type="Area2D" parent="."]
+position = Vector2(-4, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SelfHitbox"]
+position = Vector2(258, 257)
+scale = Vector2(0.9, 0.9)
+shape = SubResource("RectangleShape2D_yuo24")
+
+[node name="FacingHitbox" type="Area2D" parent="."]
+position = Vector2(-4, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FacingHitbox"]
+position = Vector2(246, -189)
+shape = SubResource("RectangleShape2D_a2yqt")
+
+[connection signal="area_entered" from="FacingHitbox" to="." method="_on_facing_hitbox_area_entered"]
+[connection signal="area_exited" from="FacingHitbox" to="." method="_on_facing_hitbox_area_exited"]
