@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://cebwv1leualj8"]
+
+[ext_resource type="Texture2D" uid="uid://bpsl4to3hjwti" path="res://addons/kenney_prototype_textures/green/texture_01.png" id="1_inad1"]
+[ext_resource type="Texture2D" uid="uid://dwory78bhsyhx" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="2_dkc4v"]
+
+[node name="UIPlus" type="TextureButton"]
+offset_right = 512.0
+offset_bottom = 512.0
+texture_normal = ExtResource("1_inad1")
+texture_disabled = ExtResource("2_dkc4v")
+ignore_texture_size = true
+stretch_mode = 1

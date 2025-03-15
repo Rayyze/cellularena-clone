@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://btxrxiqo287au"]
 
-[ext_resource type="Script" path="res://src/protein.gd" id="1_qrchv"]
+[ext_resource type="Script" uid="uid://blei2x3ak7hkc" path="res://src/protein.gd" id="1_qrchv"]
 [ext_resource type="Texture2D" uid="uid://b88brclf5wbnv" path="res://assets/protein_a.png" id="2_w0fi8"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_etr4g"]

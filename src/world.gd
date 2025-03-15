@@ -1,7 +1,5 @@
 extends Node2D
 
-signal clicked(coords: Array, source_id: int, owner_id: int)
-
 var map: Array = []
 var spawn_locations: Array = []
 var width: int = 0
@@ -27,24 +25,37 @@ func _process(_delta: float) -> void:
 		for i in range(organs.size()):
 			if not is_instance_valid(organs[i]):
 				organs[i] = null
-				
-func _input(event):
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		var local_pos = to_local(event.global_position)
-		var source_coords = Vector2i(int(local_pos.x/tile_size), int(local_pos.y/tile_size))
-		if isWithinBounds(source_coords):
-			var possible_positions: Array = []
-			var directions: Array = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
-			for dir in directions:
-				var temp_pos = dir + source_coords
-				if isWithinBounds(temp_pos) and map[temp_pos.x][temp_pos.y] == null:
-					possible_positions.append(temp_pos)
-			var source_organ = map[source_coords.x][source_coords.y]
-			if possible_positions.size() > 0 and source_organ != null and source_organ.get("organ_id"):
-				clicked.emit(possible_positions, source_organ.organ_id, source_organ.owner_id)
 
 func isWithinBounds(coords: Vector2i) -> bool:
 	return coords.x < width and coords.x >= 0 and coords.y < height and coords.y >= 0
+	
+func mapToGlobal(coords: Vector2i) -> Vector2:
+	return to_global(Vector2(coords.x*tile_size, coords.y*tile_size))
+
+func globalToMap(global_coords: Vector2) -> Vector2i:
+	var local_pos = to_local(global_coords)
+	return Vector2i(int(local_pos.x/tile_size), int(local_pos.y/tile_size))
+	
+func availableTypes(playerId: int) -> Array:
+	var result = []
+	for type in types_costs.keys():
+		if types_costs[type][0] <= players_stocks[playerId][0] and types_costs[type][1] <= players_stocks[playerId][1] and types_costs[type][2] <= players_stocks[playerId][2] and types_costs[type][3] <= players_stocks[playerId][3]:
+			result.push_back(type)
+	return result
+
+func availablePositions(organ) -> Array:
+	var possible_positions: Array = []
+	var directions: Array = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
+	for dir in directions:
+		var temp_pos = dir + organ.position_in_map
+		if isWithinBounds(temp_pos) and map[temp_pos.x][temp_pos.y] == null:
+			possible_positions.append(temp_pos)
+	return possible_positions
+
+func clickedOrgan(coords: Vector2):
+	if isWithinBounds(coords):
+		return map[coords.x][coords.y]
+	return null
 
 func loadMap(path: String) -> void:
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -90,17 +101,17 @@ func loadMap(path: String) -> void:
 	self.scale = Vector2(0.1, 0.1)
 
 func addOrgan(coords: Vector2i, type: String, owner_id: int = -1, organ_dir: String = "", source_id: int = -1) -> void:
-	if (coords[0] >= width or coords[1] >= height):
+	if not isWithinBounds(coords):
 		push_error("Invalid coordinates")
 		return
 	if not types_costs.keys().has(type):
 		push_error("Invalid type")
 		return
-	var cost = types_costs[type]
 	if owner_id < 0 and owner_id >= players_stocks.size():
 		push_error("Invalid player")
 		return
-	if not (cost[0] <= players_stocks[owner_id][0] and cost[1] <= players_stocks[owner_id][1] and cost[2] <= players_stocks[owner_id][2] and cost[3] <= players_stocks[owner_id][3]):
+	var available_types = availableTypes(owner_id)
+	if not available_types.has(type):
 		push_error("Not enough protein")
 		return
 	if (source_id < 0 or source_id >= organs.size()) and type != "root":
@@ -124,6 +135,7 @@ func addOrgan(coords: Vector2i, type: String, owner_id: int = -1, organ_dir: Str
 		for organ in organs:
 			if organ.organ_id == source_id:
 				parent = organ
+	var cost = types_costs[type]
 	for i in range(cost.size()):
 		players_stocks[owner_id][i] -= cost[i]
 	map[coords.x][coords.y] = organ_scene.instantiate()
@@ -135,6 +147,8 @@ func addOrgan(coords: Vector2i, type: String, owner_id: int = -1, organ_dir: Str
 	map[coords.x][coords.y].position = coords*tile_size
 
 func addPlayers(player_count: int):
+	if player_count > spawn_locations.size():
+		return
 	for i in range(player_count):
 		players_stocks.append([1,1,1,1])
 		addOrgan(spawn_locations[i], "root", i, "N")
