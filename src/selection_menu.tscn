@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://byopejpduj4el"]
+
+[ext_resource type="Script" uid="uid://dkc51kcihicmy" path="res://src/selection_menu.gd" id="1_prpe5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prpe5"]
+bg_color = Color(0.147672, 0.147672, 0.147672, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.753984, 0.753984, 0.753984, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="Panel" type="Panel"]
+offset_top = -150.0
+offset_right = 355.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_prpe5")
+script = ExtResource("1_prpe5")
+
+[node name="SelectionMenu" type="BoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+vertical = true
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="SelectionMenu"]
+layout_mode = 2
+text = "Choose an organ"
+
+[node name="HFlowContainer" type="HFlowContainer" parent="SelectionMenu"]
+layout_mode = 2
+size_flags_vertical = 3

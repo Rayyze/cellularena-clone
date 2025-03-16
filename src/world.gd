@@ -36,21 +36,35 @@ func globalToMap(global_coords: Vector2) -> Vector2i:
 	var local_pos = to_local(global_coords)
 	return Vector2i(int(local_pos.x/tile_size), int(local_pos.y/tile_size))
 	
-func availableTypes(playerId: int) -> Array:
-	var result = []
+func availableMoves(parent_organ) -> Dictionary:
+	var directions: Dictionary = {"S": Vector2i(0, 1), "E": Vector2i(1, 0), "N": Vector2i(0, -1), "W": Vector2i(-1, 0)}
+	var player_id = parent_organ.owner_id
+	# fetch the possible organ types
+	var result: Dictionary = {"available_positions": [], "available_types": []}
+	var available_types = []
 	for type in types_costs.keys():
-		if types_costs[type][0] <= players_stocks[playerId][0] and types_costs[type][1] <= players_stocks[playerId][1] and types_costs[type][2] <= players_stocks[playerId][2] and types_costs[type][3] <= players_stocks[playerId][3]:
-			result.push_back(type)
+		if types_costs[type][0] <= players_stocks[player_id][0] and types_costs[type][1] <= players_stocks[player_id][1] and types_costs[type][2] <= players_stocks[player_id][2] and types_costs[type][3] <= players_stocks[player_id][3]:
+			available_types.push_back(type)
+			print(type)
+	# disable root in case the organ is not a sporer
+	if parent_organ.organ_type != "sporer":
+		available_types.erase("root")
+	# create the moves for the adjacent tiles
+	for dir in directions.values():
+		var new_tile = parent_organ.position_in_map + dir
+		if isWithinBounds(new_tile) and !map[new_tile.x][new_tile.y]:
+			result["available_positions"].push_back(new_tile)
+			result["available_types"].push_back(available_types)
+			if dir != directions[parent_organ.organ_dir]:
+				result["available_types"].back().erase("root")
+	# in case of sporer + root add possible tiles along the direction of the organ
+	if available_types.has("root"):
+		var new_tile = parent_organ.position_in_map + 2*directions[parent_organ.organ_dir]
+		while isWithinBounds(new_tile) and !map[new_tile.x][new_tile.y]:
+			result["available_positions"].push_back(new_tile)
+			result["available_types"].push_back("root")
+			new_tile += directions[parent_organ.organ_dir]
 	return result
-
-func availablePositions(organ) -> Array:
-	var possible_positions: Array = []
-	var directions: Array = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
-	for dir in directions:
-		var temp_pos = dir + organ.position_in_map
-		if isWithinBounds(temp_pos) and map[temp_pos.x][temp_pos.y] == null:
-			possible_positions.append(temp_pos)
-	return possible_positions
 
 func clickedOrgan(coords: Vector2):
 	if isWithinBounds(coords):
@@ -107,11 +121,11 @@ func addOrgan(coords: Vector2i, type: String, owner_id: int = -1, organ_dir: Str
 	if not types_costs.keys().has(type):
 		push_error("Invalid type")
 		return
+	var cost = types_costs[type]
 	if owner_id < 0 and owner_id >= players_stocks.size():
 		push_error("Invalid player")
 		return
-	var available_types = availableTypes(owner_id)
-	if not available_types.has(type):
+	if not (cost[0] <= players_stocks[owner_id][0] and cost[1] <= players_stocks[owner_id][1] and cost[2] <= players_stocks[owner_id][2] and cost[3] <= players_stocks[owner_id][3]):
 		push_error("Not enough protein")
 		return
 	if (source_id < 0 or source_id >= organs.size()) and type != "root":
@@ -135,7 +149,6 @@ func addOrgan(coords: Vector2i, type: String, owner_id: int = -1, organ_dir: Str
 		for organ in organs:
 			if organ.organ_id == source_id:
 				parent = organ
-	var cost = types_costs[type]
 	for i in range(cost.size()):
 		players_stocks[owner_id][i] -= cost[i]
 	map[coords.x][coords.y] = organ_scene.instantiate()

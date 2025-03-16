@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dh38w3hlyy0yr"]
+
+[node name="UIGridOption" type="TextureButton"]
+custom_minimum_size = Vector2(51.2, 51.2)
+offset_right = 20.0
+offset_bottom = 20.0
+scale = Vector2(0.1, 0.1)
+ignore_texture_size = true
+stretch_mode = 4
