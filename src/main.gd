@@ -16,10 +16,6 @@ func _ready() -> void:
 	self.add_child(ui_layer)
 	ui_layer.left_mouse_clicked.connect(_on_world_clicked)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
 func _on_world_clicked(coords: Vector2):
 	var entity = world.clickedOrgan(world.globalToMap(coords))
 	if entity and entity.type == "organ":
@@ -29,4 +25,4 @@ func _on_world_clicked(coords: Vector2):
 		ui_layer.clearElements()
 		ui_layer.updatePossibleOrgans(available_moves["available_types"])
 		for pos in available_moves["available_positions"]:
-			ui_layer.addUIPlus(world.mapToGlobal(pos), pos, world.tile_size, world.scale[0])
+			ui_layer.addUIPlus(world.mapToGlobal(pos), pos, world.scale[0])

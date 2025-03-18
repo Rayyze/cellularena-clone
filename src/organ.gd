@@ -21,14 +21,6 @@ func setup(_organ_id: int, _position: Vector2i, _organ_type: String, _owner_id: 
 	organ_dir = _organ_dir
 	get_child(0).play(organ_type)
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass
-	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
 func action():
 	match organ_type:
 		"harvester":

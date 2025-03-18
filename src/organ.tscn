@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://eyfcb2roy48l"]
+[gd_scene load_steps=8 format=3 uid="uid://eyfcb2roy48l"]
 
 [ext_resource type="Script" uid="uid://oldyvm2twfo2" path="res://src/organ.gd" id="1_8oqcm"]
 [ext_resource type="Texture2D" uid="uid://bw7edvmwf2fq8" path="res://assets/basic.png" id="2_878il"]
+[ext_resource type="Texture2D" uid="uid://cb45t2f2pu161" path="res://assets/harvester.png" id="3_5mffu"]
 [ext_resource type="Texture2D" uid="uid://cbg8i2rvr30os" path="res://assets/root.png" id="3_teevi"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_03kvw"]
@@ -12,6 +13,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"basic",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_5mffu")
+}],
+"loop": true,
+"name": &"harvester",
 "speed": 5.0
 }, {
 "frames": [{
@@ -36,7 +45,7 @@ script = ExtResource("1_8oqcm")
 position = Vector2(256, 256)
 scale = Vector2(0.9, 0.9)
 sprite_frames = SubResource("SpriteFrames_03kvw")
-animation = &"root"
+animation = &"harvester"
 
 [node name="SelfHitbox" type="Area2D" parent="."]
 position = Vector2(-4, 0)
